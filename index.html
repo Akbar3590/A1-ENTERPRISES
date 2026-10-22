@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>A 1 ENTERPRISES - Physical Invoice & Receipt Book</title>
+  <link rel="stylesheet" href="style.css?v=2.6">
+</head>
+<body>
+
+    <!-- Top Application Control Bar (Hidden during printing) -->
+  <header class="app-toolbar no-print">
+    <div class="toolbar-header-row">
+      <div class="toolbar-brand">
+        <span class="toolbar-badge">Receipt Pad</span>
+        <h1 class="toolbar-title">A 1 ENTERPRISES</h1>
+      </div>
+      <div class="toolbar-primary-action">
+        <button type="button" id="btn-print" class="btn btn-print" title="Print physical invoice (A4)">
+          <svg viewBox="0 0 20 20" fill="currentColor" class="icon"><path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd"/></svg>
+          <span>Print</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Actions Row (Scrollable pills on mobile, clean flex group on desktop) -->
+    <nav class="toolbar-actions" aria-label="Invoice Controls">
+      <button type="button" id="btn-add-item" class="btn btn-primary" title="Add a new row to the table">
+        <svg viewBox="0 0 20 20" fill="currentColor" class="icon"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/></svg>
+        + Add Item
+      </button>
+      <button type="button" id="btn-download-png" class="btn btn-download-png" title="Download invoice as PNG image">
+        <svg viewBox="0 0 20 20" fill="currentColor" class="icon"><path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/></svg>
+        Download PNG
+      </button>
+      <button type="button" id="btn-download-pdf" class="btn btn-download-pdf" title="Download invoice as PDF document">
+        <svg viewBox="0 0 20 20" fill="currentColor" class="icon"><path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v3.586l-1.293-1.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V8z" clip-rule="evenodd"/></svg>
+        Download PDF
+      </button>
+      <button type="button" id="btn-settings" class="btn btn-secondary" title="Edit Company Details">
+        <svg viewBox="0 0 20 20" fill="currentColor" class="icon"><path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/></svg>
+        Settings
+      </button>
+      <button type="button" id="btn-save" class="btn btn-secondary" title="Save invoice to LocalStorage">
+        <svg viewBox="0 0 20 20" fill="currentColor" class="icon"><path d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h5a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V8a2 2 0 012-2h5v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z"/></svg>
+        Save
+      </button>
+      <button type="button" id="btn-load" class="btn btn-secondary" title="Load saved invoice">
+        <svg viewBox="0 0 20 20" fill="currentColor" class="icon"><path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd"/></svg>
+        Load
+      </button>
+      <button type="button" id="btn-sample-data" class="btn btn-secondary" title="Fill realistic sample products">
+        <svg viewBox="0 0 20 20" fill="currentColor" class="icon"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"/></svg>
+        Sample
+      </button>
+      <button type="button" id="btn-remove-item" class="btn btn-secondary" title="Remove the last row">
+        <svg viewBox="0 0 20 20" fill="currentColor" class="icon"><path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+        Remove
+      </button>
+      <button type="button" id="btn-clear" class="btn btn-secondary" title="Reset all fields">
+        <svg viewBox="0 0 20 20" fill="currentColor" class="icon"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+        Clear
+      </button>
+
+    </nav>
+  </header>
+
+  <!-- Notification Toast (Screen only) -->
+  <div id="toast-message" class="toast-message no-print" aria-live="polite"></div>
+
+  <!-- Workspace Container for Paper Presentation -->
+  <main class="workspace-container">
+    <!-- Mobile Horizontal Scroll Helper Notice -->
+    <div class="mobile-swipe-guide no-print">
+      <span>⇄ Swipe receipt horizontally to view &amp; edit full table</span>
+    </div>
+
+    <div class="paper-scroll-wrapper" id="paper-scroll-wrapper">
+
+      <!-- THE PHYSICAL INVOICE CONTAINER -->
+      <article id="invoice-paper" class="invoice-paper">
+        <div class="invoice-inner-frame">
+
+          <!-- 1. HEADER SECTION (Bordered Box) -->
+          <header class="receipt-header-box">
+            <div class="header-top-row">
+              <div class="header-gstin" id="display-gstin-wrap">
+                <span class="lbl-bold">GSTIN</span> <span id="display-gstin">27CCYPP0748Q1ZE</span>
+              </div>
+              <div class="header-phones">
+                <div class="phone-item">
+                  <span class="call-icon" aria-label="Calling Phone" title="Calling Number">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-2.2 2.2a15.053 15.053 0 01-6.59-6.59l2.2-2.21a.96.96 0 00.25-1A11.36 11.36 0 018.57 3.9c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.52c0-.55-.45-1-.99-1z"/></svg>
+                  </span>
+                  <span id="display-phone1">97672 14594</span>
+                </div>
+                <div class="phone-item">
+                  <span class="wa-icon" aria-label="WhatsApp" title="WhatsApp Number">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0012.04 2zm0 18.15c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.15 8.15 0 01-1.25-4.38c0-4.54 3.7-8.24 8.24-8.24 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 012.41 5.83c0 4.54-3.7 8.23-8.23 8.23zm4.51-6.17c-.25-.12-1.47-.72-1.7-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.39-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.12-.15.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.12.17 1.77 2.7 4.29 3.79.6.26 1.07.41 1.44.53.6.19 1.15.16 1.59.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.15-1.18-.07-.1-.23-.16-.48-.28z"/></svg>
+                  </span>
+                  <span id="display-phone2">97646 72936</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="company-title-wrap">
+              <h2 class="company-name" id="display-company-name">A 1 ENTERPRISES</h2>
+              <p class="company-address" id="display-company-address">OPP-ALLAHU AKBAR BLD, Kondhwa Budruk, Pune, Maharashtra- 411048</p>
+            </div>
+          </header>
+
+          <!-- 2. INVOICE META ROW 1: No. and Date -->
+          <section class="meta-section">
+            <div class="meta-row meta-row-top">
+              <div class="meta-field-no">
+                <label for="inv-number" class="meta-label">No.</label>
+                <input type="text" id="inv-number" class="seamless-input inv-num-input" value="166" autocomplete="off" spellcheck="false" placeholder="166">
+              </div>
+              <div class="meta-field-date">
+                <label for="inv-date" class="meta-label">Date :</label>
+                <input type="text" id="inv-date" class="seamless-input inv-date-input" autocomplete="off" placeholder="DD/MM/YYYY">
+              </div>
+            </div>
+
+            <!-- INVOICE META ROW 2: Name -->
+            <div class="meta-row meta-row-line">
+              <label for="inv-cust-name" class="meta-label">Name :</label>
+              <div class="input-line-wrapper">
+                <input type="text" id="inv-cust-name" class="seamless-input line-input" autocomplete="off" spellcheck="false" placeholder="">
+              </div>
+            </div>
+
+            <!-- INVOICE META ROW 3: Address -->
+            <div class="meta-row meta-row-line">
+              <label for="inv-cust-address" class="meta-label">Address :</label>
+              <div class="input-line-wrapper">
+                <input type="text" id="inv-cust-address" class="seamless-input line-input" autocomplete="off" spellcheck="false" placeholder="">
+              </div>
+            </div>
+          </section>
+
+          <!-- 3. PRODUCT TABLE -->
+          <section class="table-section">
+            <table class="receipt-table" id="receipt-table">
+              <colgroup>
+                <col class="col-sr">
+                <col class="col-desc">
+                <col class="col-hsn">
+                <col class="col-qty">
+                <col class="col-rate">
+                <col class="col-amount">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th class="th-sr">
+                    <div class="sr-stacked">
+                      <span>Sr.</span>
+                      <span>No.</span>
+                    </div>
+                  </th>
+                  <th class="th-desc">Description of Goods</th>
+                  <th class="th-hsn">HSN</th>
+                  <th class="th-qty">Qnty.</th>
+                  <th class="th-rate">Rate</th>
+                  <th class="th-amount">Amount</th>
+                </tr>
+              </thead>
+              <tbody id="product-rows-body">
+                <!-- Dynamically populated rows + minimum pad filler rows rendered by JavaScript -->
+              </tbody>
+            </table>
+          </section>
+
+          <!-- 4. BOTTOM SUMMARY / TOTAL SECTION -->
+          <section class="summary-section">
+            <div class="words-container">
+              <div class="words-line-1">
+                <span class="words-label">Amount in Words :</span>
+                <span id="display-amount-words" class="words-text"></span>
+              </div>
+              <div class="words-line-2">
+                <span id="display-amount-words-continuation" class="words-text"></span>
+              </div>
+            </div>
+            <div class="total-block">
+              <div class="total-label-cell">
+                <span>Including</span>
+                <span>GST</span>
+                <span class="total-main-lbl">TOTAL</span>
+              </div>
+              <div class="total-amount-cell">
+                <span id="display-grand-total">0.00</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- 5. COMPOSITION SCHEME BANNER -->
+          <section class="composition-banner">
+            <span class="comp-left">We are Under Composition Scheme.</span>
+            <span class="comp-right">Not Eligible to collect Tax on supplies.</span>
+          </section>
+
+          <!-- 6. FOOTER: TERMS, E.&O.E., SIGNATURE -->
+          <footer class="receipt-footer">
+            <div class="footer-terms">
+              <p class="term-line">• Goods once sold will not be taken back.</p>
+              <p class="term-line">• No Guarantee No Refund No Claim.</p>
+              <p class="term-line">• All disputes Subject to Pune Jurisdiction.</p>
+            </div>
+            <div class="footer-center">
+              <span class="eoe-text">E. & O. E.</span>
+            </div>
+            <div class="footer-signature">
+              <div class="sign-for-company">
+                For : <span id="display-sign-company">A 1 ENTERPRISES</span>
+              </div>
+              <div class="sign-spacer"></div>
+              <div class="sign-caption">
+                Signature
+              </div>
+            </div>
+          </footer>
+
+        </div> <!-- /.invoice-inner-frame -->
+      </article> <!-- /.invoice-paper -->
+
+    </div> <!-- /.paper-scroll-wrapper -->
+  </main>
+
+  <!-- SETTINGS MODAL (Outside Invoice, Hidden during printing) -->
+  <aside id="settings-modal" class="settings-modal no-print" aria-hidden="true" role="dialog" aria-labelledby="settings-heading">
+    <div class="settings-backdrop" id="settings-backdrop"></div>
+    <div class="settings-card">
+      <div class="settings-header">
+        <h3 id="settings-heading">Receipt Book Settings</h3>
+        <button type="button" id="btn-close-settings" class="btn-close" aria-label="Close settings">&times;</button>
+      </div>
+      <form id="settings-form" class="settings-form">
+        <div class="form-group">
+          <label for="cfg-company-name">Company Name</label>
+          <input type="text" id="cfg-company-name" class="form-control" required value="A 1 ENTERPRISES">
+        </div>
+        <div class="form-group">
+          <label for="cfg-gstin">GSTIN</label>
+          <input type="text" id="cfg-gstin" class="form-control" value="27CCYPP0748Q1ZE">
+        </div>
+        <div class="form-group">
+          <label for="cfg-address">Address</label>
+          <textarea id="cfg-address" class="form-control" rows="2">OPP-ALLAHU AKBAR BLD, Kondhwa Budruk, Pune, Maharashtra- 411048</textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-half">
+            <label for="cfg-phone1">Calling Number 1</label>
+            <input type="text" id="cfg-phone1" class="form-control" value="97672 14594">
+          </div>
+          <div class="form-group col-half">
+            <label for="cfg-phone2">WhatsApp Number 2</label>
+            <input type="text" id="cfg-phone2" class="form-control" value="97646 72936">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="cfg-gst-percent">Optional GST (%) — <span style="font-size:11px;color:#64748b;font-weight:normal;">Keep 0% for Composition Scheme / Tax-Inclusive</span></label>
+          <input type="number" id="cfg-gst-percent" class="form-control" min="0" max="100" step="0.1" value="0" placeholder="0">
+        </div>
+        <div class="settings-actions">
+          <button type="button" id="btn-reset-settings" class="btn btn-secondary">Reset to Default</button>
+          <button type="submit" class="btn btn-primary btn-save-modal">
+            <svg viewBox="0 0 20 20" fill="currentColor" style="width:16px;height:16px;margin-right:4px;"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+            Save Settings
+          </button>
+        </div>
+      </form>
+    </div>
+  </aside>
+
+  <script src="libs/html2canvas.min.js"></script>
+  <script src="libs/jspdf.umd.min.js"></script>
+  <script src="script.js?v=2.6"></script>
+</body>
+</html>
